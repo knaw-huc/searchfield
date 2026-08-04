@@ -1,0 +1,47 @@
+{
+  "name": "@knaw-huc/searchfield",
+  "version": "0.0.1",
+  "type": "module",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/knaw-huc/searchfield"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.mts",
+      "import": "./dist/react.mjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm run parser && tsdown",
+    "dev": "npm run parser && tsdown --watch",
+    "parser": "lezer-generator src/lucene/lucene.grammar --typeScript -o src/lucene/parser.ts"
+  },
+  "dependencies": {
+    "@lezer/lr": "^1.4.10",
+    "codemirror": "^6.0.2"
+  },
+  "devDependencies": {
+    "@lezer/generator": "^1.8.0",
+    "@types/react": "^19.2.18",
+    "react": "^19.2.8",
+    "tsdown": "^0.22.13"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "searchfield",
+  "private": true,
+  "workspaces": [
+    "lib",
+    "app"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=lib",
+    "dev:example": "npm run dev --workspace=app"
+  }
+}

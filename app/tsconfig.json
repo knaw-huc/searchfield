@@ -1,0 +1,14 @@
+{
+  "extends": "../tsconfig.base.json",
+  "types": [
+    "vite/client"
+  ],
+  "references": [
+    {
+      "path": "../lib"
+    }
+  ],
+  "include": [
+    "src"
+  ]
+}
