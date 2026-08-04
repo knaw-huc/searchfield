@@ -1,6 +1,6 @@
 {
   "name": "@knaw-huc/searchfield",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.mts",
