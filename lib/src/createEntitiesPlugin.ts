@@ -10,7 +10,11 @@ import {
 import type {DecorationSet} from '@codemirror/view';
 import type {AutocompleteConfig} from './SearchFieldConfig';
 
-export default function createEntitiesPlugin<E extends object>(config: AutocompleteConfig<E>) {
+export default function createEntitiesPlugin<E extends object>(config: AutocompleteConfig<E>, classNames: {
+    entity?: string;
+    entityIcon?: string;
+    entityCross?: string;
+}) {
     class EntityWidget<E extends object> extends WidgetType {
         private readonly entity: E;
         private readonly config: AutocompleteConfig<E>;
@@ -31,7 +35,7 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
 
         toDOM(view: EditorView) {
             const el = document.createElement('span');
-            el.classList = 'cm-entity';
+            el.classList = `cm-entity ${classNames.entity}`.trim();
 
             if (this.config.color) {
                 typeof this.config.color === 'function'
@@ -41,13 +45,13 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
 
             if (this.config.icon) {
                 const icon = this.config.icon(this.entity).cloneNode(true) as SVGElement;
-                icon.classList = 'cm-entity-icon';
+                icon.classList = `cm-entity-icon ${classNames.entityIcon}`.trim();
                 el.append(icon);
             }
 
             const cross = document.createElement('span');
             cross.textContent = '✕';
-            cross.classList = 'cm-entity-cross';
+            cross.classList = `cm-entity-cross ${classNames.entityCross}`.trim();
             cross.addEventListener('click', e => {
                 e.preventDefault();
                 e.stopPropagation();

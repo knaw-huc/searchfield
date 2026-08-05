@@ -116,7 +116,11 @@ export default class SearchField<E extends object = object> {
             this.config.enableHistory ? [history()] : [],
             this.config.autocomplete ? [
                 this.createAutocompletion(),
-                createEntitiesPlugin(this.config.autocomplete)
+                createEntitiesPlugin(this.config.autocomplete, {
+                    entity: this.config.theme?.light?.entity?.className || this.config.theme?.dark?.entity?.className,
+                    entityIcon: this.config.theme?.light?.icon?.className || this.config.theme?.dark?.icon?.className,
+                    entityCross: this.config.theme?.light?.cross?.className || this.config.theme?.dark?.cross?.className,
+                })
             ] : [],
             this.config.enableLuceneQuerySyntax ? [
                 bracketMatching(),
@@ -147,19 +151,19 @@ export default class SearchField<E extends object = object> {
                 fontSize: '0.9em',
                 backgroundColor: 'var(--cm-entity-color)',
                 color: 'color-mix(in srgb, var(--cm-entity-color) 10%, black 90%);',
-                ...config?.entity,
+                ...config?.entity?.style,
             },
             '.cm-entity-icon': {
                 marginRight: '0.2em',
                 width: '1em',
                 height: '1em',
-                ...config?.icon,
+                ...config?.icon?.style,
             },
             '.cm-entity-cross': {
                 cursor: 'pointer',
                 marginLeft: '0.2em',
                 alignSelf: 'baseline',
-                ...config?.cross,
+                ...config?.cross?.style,
             },
             '.cm-tooltip.cm-tooltip-autocomplete': {
                 '& > ul': {
@@ -209,7 +213,7 @@ export default class SearchField<E extends object = object> {
                 render: completion => {
                     if ('entity' in completion) {
                         const icon = this.config.autocomplete!.icon!(completion.entity as E).cloneNode(true) as SVGElement;
-                        icon.classList = 'cm-entity-icon';
+                        icon.classList = `cm-entity-icon ${this.config.theme?.light?.icon?.className} ${this.config.theme?.dark?.icon?.className}`.trim();
                         return icon;
                     }
                     return null;

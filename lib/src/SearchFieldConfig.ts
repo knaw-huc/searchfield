@@ -21,9 +21,9 @@ export interface UpdateState {
 export interface ThemeConfig {
     fontFamily?: string;
     fontFamilyAutocomplete?: string;
-    entity?: StyleSpec;
-    icon?: StyleSpec;
-    cross?: StyleSpec;
+    entity?: {className?: string, style?: StyleSpec};
+    icon?: {className?: string, style?: StyleSpec};
+    cross?: {className?: string, style?: StyleSpec};
     highlight?: HighlightConfig;
 }
 
