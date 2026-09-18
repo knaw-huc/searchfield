@@ -6,9 +6,11 @@ import {
     ViewUpdate,
     WidgetType
 } from '@codemirror/view';
+import {entityTokenRegex, decodeEntityToken, entityTokensToLabels} from './entityToken';
 
 import type {DecorationSet} from '@codemirror/view';
 import type {AutocompleteConfig} from './SearchFieldConfig';
+import type {EntityToken} from './entityToken';
 
 export default function createEntitiesPlugin<E extends object>(config: AutocompleteConfig<E>, classNames: {
     entity?: string;
@@ -16,20 +18,20 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
     entityCross?: string;
 }) {
     class EntityWidget<E extends object> extends WidgetType {
-        private readonly entity: E;
+        private readonly entityToken: EntityToken;
         private readonly config: AutocompleteConfig<E>;
 
-        constructor(entity: E, config: AutocompleteConfig<E>) {
+        constructor(entity: EntityToken, config: AutocompleteConfig<E>) {
             super();
-            this.entity = entity;
+            this.entityToken = entity;
             this.config = config;
         }
 
         eq(other: WidgetType) {
             return other instanceof EntityWidget && (
-                typeof this.config.id === 'function'
-                    ? this.config.id(this.entity) === this.config.id(this.entity)
-                    : this.entity[this.config.id] === other.entity[this.config.id]
+                this.entityToken.type === other.entityToken.type &&
+                this.entityToken.id === other.entityToken.id &&
+                this.entityToken.label === other.entityToken.label
             );
         }
 
@@ -37,17 +39,15 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
             const el = document.createElement('span');
             el.classList = `cm-entity ${classNames.entity}`.trim();
 
-            if (this.config.color) {
-                const color = typeof this.config.color === 'function'
-                    ? this.config.color(this.entity)
-                    : this.entity[this.config.color];
+            if (this.config.token?.color) {
+                const color = this.config.token.color(this.entityToken);
                 if (color) {
                     el.style.setProperty('--cm-entity-color', color.toString());
                 }
             }
 
-            if (this.config.icon) {
-                const iconFromConfig = this.config.icon(this.entity);
+            if (this.config.token?.icon) {
+                const iconFromConfig = this.config.token.icon(this.entityToken);
                 if (iconFromConfig) {
                     const icon = iconFromConfig.cloneNode(true) as SVGElement;
                     icon.classList = `cm-entity-icon ${classNames.entityIcon}`.trim();
@@ -69,20 +69,18 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
                 }
             });
 
-            const label = typeof this.config.label === 'function'
-                ? this.config.label(this.entity)
-                : this.entity[this.config.label] as string;
-            el.append(document.createTextNode(label), cross);
+            el.append(document.createTextNode(this.entityToken.label), cross);
 
             return el;
         }
     }
 
     const entityMatcher = new MatchDecorator({
-        regexp: config.entityRegex,
-        decoration: match => Decoration.replace({
-            widget: new EntityWidget(JSON.parse(match[1]), config)
-        }),
+        regexp: entityTokenRegex,
+        decoration: match => {
+            const entityToken = decodeEntityToken(match[0]);
+            return entityToken ? Decoration.replace({widget: new EntityWidget(entityToken, config)}) : null;
+        },
     });
 
     const entitiesPlugin = ViewPlugin.fromClass(class {
@@ -97,8 +95,10 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
         }
     }, {
         decorations: instance => instance.entities,
-        provide: plugin => EditorView.atomicRanges.of(view =>
-            view.plugin(plugin)?.entities || Decoration.none),
+        provide: plugin => [
+            EditorView.atomicRanges.of(view => view.plugin(plugin)?.entities || Decoration.none),
+            EditorView.clipboardOutputFilter.of(entityTokensToLabels),
+        ]
     });
 
     return entitiesPlugin;

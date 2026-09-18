@@ -63,14 +63,17 @@ const searchField = new SearchField<Entity>(input, {
                 const altMatch = entity.alternatives.find(alt => alt.toLowerCase().indexOf(query) > -1);
 
                 return labelMatch || altMatch;
-            })
+            });
         },
-        entityRegex: /({"id":.*?,"type":.*?,"label":.*?,"alternatives":.*?})/g,
+        type: 'type',
         id: 'id',
         label: 'label',
         description: entity => entity.alternatives.join(', '),
-        color: entity => types[entity.type].color,
-        icon: entity => types[entity.type].icon,
+        icon: entity => types[entity.type]?.icon,
+        token: {
+            color: entityToken => types[entityToken.type]?.color,
+            icon: entityToken => types[entityToken.type]?.icon,
+        }
     },
 });
 

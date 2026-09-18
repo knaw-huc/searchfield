@@ -1,4 +1,5 @@
 import {CompletionContext, type CompletionResult} from '@codemirror/autocomplete';
+import {getValue, encodeEntityToken} from './entityToken';
 import type {AutocompleteConfig} from './SearchFieldConfig';
 
 export default function createEntityCompletionSource<E extends object = object>(config: AutocompleteConfig<E>) {
@@ -27,9 +28,9 @@ export default function createEntityCompletionSource<E extends object = object>(
                 from: word.from,
                 options: entities.map(entity => ({
                     type: 'property',
-                    label: typeof config.label === 'function' ? config.label(entity) : entity[config.label] as string,
-                    detail: typeof config.description === 'function' ? config.description(entity) : entity[config.description] as string,
-                    apply: JSON.stringify(entity),
+                    label: getValue(entity, config.label),
+                    detail: getValue(entity, config.description),
+                    apply: encodeEntityToken(entity, config),
                     entity,
                 })),
             };

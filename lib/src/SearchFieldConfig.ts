@@ -1,4 +1,5 @@
 import type {StyleSpec} from 'style-mod';
+import type {EntityToken} from './entityToken';
 
 export default interface SearchFieldConfig<E extends object> {
     query: string;
@@ -41,10 +42,13 @@ export interface AutocompleteConfig<E extends object> {
     source: (query: string) => Promise<E[]>;
     minimumChars?: number;
     debounceMs?: number;
-    entityRegex: RegExp;
     id: keyof E | ((entity: E) => string);
+    type: keyof E | ((entity: E) => string);
     label: keyof E | ((entity: E) => string);
     description: keyof E | ((entity: E) => string);
-    color?: keyof E | ((entity: E) => string | undefined | null);
     icon?: (entity: E) => SVGElement | undefined | null;
+    token?: {
+        color?: (entityToken: EntityToken) => string | undefined | null;
+        icon?: (entityToken: EntityToken) => SVGElement | undefined | null;
+    };
 }
