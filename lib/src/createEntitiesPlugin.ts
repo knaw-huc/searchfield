@@ -38,15 +38,21 @@ export default function createEntitiesPlugin<E extends object>(config: Autocompl
             el.classList = `cm-entity ${classNames.entity}`.trim();
 
             if (this.config.color) {
-                typeof this.config.color === 'function'
-                    ? el.style.setProperty('--cm-entity-color', this.config.color(this.entity))
-                    : el.style.setProperty('--cm-entity-color', this.entity[this.config.color] as string);
+                const color = typeof this.config.color === 'function'
+                    ? this.config.color(this.entity)
+                    : this.entity[this.config.color];
+                if (color) {
+                    el.style.setProperty('--cm-entity-color', color.toString());
+                }
             }
 
             if (this.config.icon) {
-                const icon = this.config.icon(this.entity).cloneNode(true) as SVGElement;
-                icon.classList = `cm-entity-icon ${classNames.entityIcon}`.trim();
-                el.append(icon);
+                const iconFromConfig = this.config.icon(this.entity);
+                if (iconFromConfig) {
+                    const icon = iconFromConfig.cloneNode(true) as SVGElement;
+                    icon.classList = `cm-entity-icon ${classNames.entityIcon}`.trim();
+                    el.append(icon);
+                }
             }
 
             const cross = document.createElement('span');

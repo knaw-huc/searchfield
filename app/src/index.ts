@@ -10,7 +10,7 @@ function getSVGElement(svg: string) {
     return svgDoc.documentElement as unknown as SVGElement;
 }
 
-const types = {
+const types: Record<string, { color: string, icon: SVGElement }> = {
     'Place': {color: '#C5D89D', icon: getSVGElement(placeIcon)},
     'Polity': {color: '#BDE8F5', icon: getSVGElement(polityIcon)},
 };

@@ -39,11 +39,12 @@ export interface HighlightConfig {
 
 export interface AutocompleteConfig<E extends object> {
     source: (query: string) => Promise<E[]>;
+    minimumChars?: number;
     debounceMs?: number;
     entityRegex: RegExp;
     id: keyof E | ((entity: E) => string);
     label: keyof E | ((entity: E) => string);
     description: keyof E | ((entity: E) => string);
-    color?: keyof E | ((entity: E) => string);
-    icon?: (entity: E) => SVGElement;
+    color?: keyof E | ((entity: E) => string | undefined | null);
+    icon?: (entity: E) => SVGElement | undefined | null;
 }

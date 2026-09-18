@@ -1,5 +1,5 @@
 import {CompletionContext, type CompletionResult} from '@codemirror/autocomplete';
-import type {AutocompleteConfig} from './SearchFieldConfig.ts';
+import type {AutocompleteConfig} from './SearchFieldConfig';
 
 export default function createEntityCompletionSource<E extends object = object>(config: AutocompleteConfig<E>) {
     return async (context: CompletionContext): Promise<CompletionResult | null> => {
@@ -14,9 +14,11 @@ export default function createEntityCompletionSource<E extends object = object>(
                     return null;
             }
 
-            const search = word.text.toString();
-            const entities = await config.source(search);
+            const search = word.text.trim();
+            if ((config.minimumChars && search.length < config.minimumChars))
+                return null;
 
+            const entities = await config.source(search);
             if (context.aborted)
                 return null;
 

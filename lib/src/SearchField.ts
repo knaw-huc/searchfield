@@ -212,9 +212,12 @@ export default class SearchField<E extends object = object> {
             addToOptions: this.config.autocomplete!.icon ? [{
                 render: completion => {
                     if ('entity' in completion) {
-                        const icon = this.config.autocomplete!.icon!(completion.entity as E).cloneNode(true) as SVGElement;
-                        icon.classList = `cm-entity-icon ${this.config.theme?.light?.icon?.className} ${this.config.theme?.dark?.icon?.className}`.trim();
-                        return icon;
+                        const iconFromConfig = this.config.autocomplete!.icon!(completion.entity as E);
+                        if (iconFromConfig) {
+                            const icon = iconFromConfig.cloneNode(true) as SVGElement;
+                            icon.classList = `cm-entity-icon ${this.config.theme?.light?.icon?.className} ${this.config.theme?.dark?.icon?.className}`.trim();
+                            return icon;
+                        }
                     }
                     return null;
                 },
