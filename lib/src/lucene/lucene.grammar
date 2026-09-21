@@ -23,6 +23,7 @@ Primitive {
   TermClause   |
   PhraseClause |
   Regex        |
+  EntityToken  |
   Group
 }
 
@@ -72,8 +73,12 @@ Boost {
 }
 
 @tokens {
+  EntityToken {
+    "@{" ![|}]+ "|" ![|}]+ "|" ![}]+ "}"
+  }
+
   Term {
-    (![ \t\n\r()\[\]{}"/~^*?:\\] | Escape)+
+    (![ \t\n\r()\[\]{}"/~^*?:\\@] | Escape)+
   }
 
   Phrase {

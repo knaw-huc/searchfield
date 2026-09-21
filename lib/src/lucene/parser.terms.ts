@@ -14,9 +14,10 @@ export const
   Phrase = 12,
   Proximity = 13,
   Regex = 14,
-  Group = 15,
-  Boost = 16,
-  Float = 17,
-  Not = 18,
-  And = 19,
-  Or = 20
+  EntityToken = 15,
+  Group = 16,
+  Boost = 17,
+  Float = 18,
+  Not = 19,
+  And = 20,
+  Or = 21

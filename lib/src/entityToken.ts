@@ -6,8 +6,8 @@ export interface EntityToken {
     label: string;
 }
 
-const entityTokenPattern = String.raw`@\{([^|}]*)\|([^|}]*)\|([^}]*)\}`;
-const entityTokenExactRegex = new RegExp(`^${entityTokenPattern}$`);
+const entityTokenPattern = String.raw`@\{([^|}]+)\|([^|}]+)\|([^}]+)\}`;
+export const entityTokenExactRegex = new RegExp(`^${entityTokenPattern}$`);
 export const entityTokenRegex = new RegExp(entityTokenPattern, 'g');
 
 export function encodeEntityToken<E extends object>(entity: E, config: AutocompleteConfig<E>): string {

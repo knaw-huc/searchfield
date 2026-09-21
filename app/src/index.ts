@@ -1,4 +1,4 @@
-import SearchField, {type UpdateState} from '@knaw-huc/searchfield';
+import SearchField, {type UpdateState, type Query} from '@knaw-huc/searchfield';
 import places from './data/places.json' with {type: 'json'};
 import polities from './data/polities.json' with {type: 'json'};
 import placeIcon from './assets/place.svg?raw';
@@ -38,9 +38,11 @@ const input = document.getElementsByClassName('searchbox-input')[0];
 const undoButton = document.getElementsByClassName('searchbox-undo-button')[0];
 const redoButton = document.getElementsByClassName('searchbox-redo-button')[0];
 const searchButton = document.getElementsByClassName('searchbox-search-button')[0];
+const output = document.getElementsByClassName('output')[0];
 
-function onSearch(query: string) {
-    console.log('Search query:', query);
+function onSearch(query: Query) {
+    console.log('Query', query);
+    output.textContent = JSON.stringify(query, null, 2);
 }
 
 function onUpdate({canUndo, canRedo}: UpdateState) {

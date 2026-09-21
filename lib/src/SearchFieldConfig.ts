@@ -1,17 +1,25 @@
 import type {StyleSpec} from 'style-mod';
 import type {EntityToken} from './entityToken';
+import type {Query as TreeQuery} from './lucene/ast/types';
 
 export default interface SearchFieldConfig<E extends object> {
     query: string;
     enableHistory: boolean;
     enableLuceneQuerySyntax: boolean;
-    onSearch?: (query: string) => void;
+    defaultOperator: 'and' | 'or';
+    onSearch?: (query: Query) => void;
     onUpdate?: (state: UpdateState) => void;
     theme?: {
         light?: ThemeConfig;
         dark?: ThemeConfig;
     };
     autocomplete?: AutocompleteConfig<E>;
+}
+
+export interface Query {
+    source: string;
+    lucene: string;
+    query: TreeQuery | null;
 }
 
 export interface UpdateState {
@@ -22,9 +30,9 @@ export interface UpdateState {
 export interface ThemeConfig {
     fontFamily?: string;
     fontFamilyAutocomplete?: string;
-    entity?: {className?: string, style?: StyleSpec};
-    icon?: {className?: string, style?: StyleSpec};
-    cross?: {className?: string, style?: StyleSpec};
+    entity?: { className?: string, style?: StyleSpec };
+    icon?: { className?: string, style?: StyleSpec };
+    cross?: { className?: string, style?: StyleSpec };
     highlight?: HighlightConfig;
 }
 
