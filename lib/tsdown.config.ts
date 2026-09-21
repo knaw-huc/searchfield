@@ -5,4 +5,11 @@ export default defineConfig({
         index: 'src/index.ts',
         react: 'src/react.tsx',
     },
+    deps: {
+        neverBundle: [
+            'codemirror',
+            /^@codemirror\//,
+            /^@lezer\//,
+        ],
+    },
 });

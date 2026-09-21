@@ -27,6 +27,7 @@
     "parser": "lezer-generator src/lucene/lucene.grammar --typeScript -o src/lucene/parser.ts"
   },
   "dependencies": {
+    "@codemirror/theme-one-dark": "^6.1.3",
     "@lezer/lr": "^1.4.10",
     "codemirror": "^6.0.2"
   },

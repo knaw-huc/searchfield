@@ -3,6 +3,7 @@ import {EditorState, Compartment} from '@codemirror/state';
 import {autocompletion} from '@codemirror/autocomplete';
 import {EditorView, ViewUpdate, keymap} from '@codemirror/view';
 import {defaultHighlightStyle, syntaxHighlighting, bracketMatching, HighlightStyle} from '@codemirror/language';
+import {oneDarkHighlightStyle} from '@codemirror/theme-one-dark';
 import {tags as t} from '@lezer/highlight';
 import createEntitiesPlugin from './createEntitiesPlugin';
 import createEntityCompletionSource from './createEntityCompletionSource';
@@ -126,7 +127,6 @@ export default class SearchField<E extends object = object> {
                 bracketMatching(),
                 LuceneLanguageSupport(),
                 syntaxHighlightingExt,
-                syntaxHighlighting(defaultHighlightStyle),
             ] : [],
         ];
     }
@@ -179,15 +179,18 @@ export default class SearchField<E extends object = object> {
     }
 
     private createSyntaxHighlighting(dark: boolean, config?: HighlightConfig): Extension {
-        return syntaxHighlighting(HighlightStyle.define([
-            {tag: t.string, class: config?.string},
-            {tag: t.operatorKeyword, class: config?.operatorKeyword},
-            {tag: t.number, class: config?.number},
-            {tag: t.modifier, class: config?.modifier},
-            {tag: t.regexp, class: config?.regexp},
-            {tag: t.escape, class: config?.escape},
-            {tag: t.paren, class: config?.paren},
-        ], {themeType: dark ? 'dark' : 'light'}));
+        return [
+            ...config ? [syntaxHighlighting(HighlightStyle.define([
+                {tag: t.string, class: config?.string},
+                {tag: t.operatorKeyword, class: config?.operatorKeyword},
+                {tag: t.number, class: config?.number},
+                {tag: t.modifier, class: config?.modifier},
+                {tag: t.regexp, class: config?.regexp},
+                {tag: t.escape, class: config?.escape},
+                {tag: t.paren, class: config?.paren},
+            ], {themeType: dark ? 'dark' : 'light'}))] : [],
+            dark ? syntaxHighlighting(oneDarkHighlightStyle) : syntaxHighlighting(defaultHighlightStyle),
+        ];
     }
 
     private createKeymap(): Extension {
