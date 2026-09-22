@@ -69,7 +69,7 @@ Not {
 }
 
 Boost {
-  "^" Float
+  "^" (Integer | Float)
 }
 
 @tokens {
@@ -94,7 +94,7 @@ Boost {
   }
 
   Float {
-    @digit+ ("." @digit+)?
+    @digit+ "." @digit+
   }
 
   Escape {

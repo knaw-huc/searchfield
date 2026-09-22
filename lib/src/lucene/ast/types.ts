@@ -15,7 +15,7 @@ export type Query =
     | TermQuery
     | PhraseQuery
     | RegexQuery
-    | WildcardQuery
+    | PrefixWildcardQuery
     | FuzzyQuery
     | EntityQuery;
 
@@ -45,8 +45,8 @@ export interface RegexQuery extends ASTBase {
     value: string;
 }
 
-export interface WildcardQuery extends ASTBase {
-    type: 'wildcard';
+export interface PrefixWildcardQuery extends ASTBase {
+    type: 'prefix-wildcard';
     value: string;
 }
 

@@ -1,15 +1,16 @@
 import {entityTokenExactRegex} from '../../entityToken';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {
+    ASTBase,
     Query,
     BooleanQuery,
     NotQuery,
     TermQuery,
     PhraseQuery,
     RegexQuery,
-    WildcardQuery,
+    PrefixWildcardQuery,
     FuzzyQuery,
-    ASTBase, EntityQuery,
+    EntityQuery,
 } from './types';
 
 const unescape = (value: string) => value.replace(/\\([\s\S])/g, '$1');
@@ -117,7 +118,7 @@ function termClause(node: SyntaxNode, source: string): Query | null {
         return fuzzyTerm(child, source);
 
     if (child.name === 'PrefixWildcardTerm')
-        return wildcardTerm(child, source);
+        return prefixWildcardTerm(child, source);
 
     return null;
 }
@@ -143,13 +144,13 @@ function fuzzyTerm(node: SyntaxNode, source: string): FuzzyQuery | TermQuery | n
     } satisfies Omit<FuzzyQuery, keyof ASTBase>, node, source);
 }
 
-function wildcardTerm(node: SyntaxNode, source: string): WildcardQuery | null {
+function prefixWildcardTerm(node: SyntaxNode, source: string): PrefixWildcardQuery | null {
     const term = childNamed(node, 'Term');
     if (!term)
         return null
 
     const value = unescape(source.slice(term.from, term.to));
-    return withBase({type: 'wildcard', value} satisfies Omit<WildcardQuery, keyof ASTBase>, node, source);
+    return withBase({type: 'prefix-wildcard', value} satisfies Omit<PrefixWildcardQuery, keyof ASTBase>, node, source);
 }
 
 function phraseClause(node: SyntaxNode, source: string): PhraseQuery | null {
