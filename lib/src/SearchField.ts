@@ -5,11 +5,10 @@ import {EditorView, ViewUpdate, keymap} from '@codemirror/view';
 import {defaultHighlightStyle, syntaxHighlighting, bracketMatching, syntaxTree, HighlightStyle} from '@codemirror/language';
 import {oneDarkHighlightStyle} from '@codemirror/theme-one-dark';
 import {tags as t} from '@lezer/highlight';
-import {entityTokensToLabels} from './entityToken';
+import getQuery from './getQuery';
 import createEntitiesPlugin from './createEntitiesPlugin';
 import createEntityCompletionSource from './createEntityCompletionSource';
 import LuceneLanguageSupport from './lucene/LuceneLanguageSupport';
-import {parseQuery} from './lucene/ast/parseQuery';
 
 import {type Extension} from '@codemirror/state';
 import {type HighlightConfig, type Query, type ThemeConfig} from './SearchFieldConfig';
@@ -76,11 +75,7 @@ export default class SearchField<E extends object = object> {
 
     private getQuery(): Query {
         const doc = this.view.state.doc.toString();
-        return {
-            source: doc,
-            lucene: entityTokensToLabels(doc),
-            query: parseQuery(doc, syntaxTree(this.view.state), this.config.defaultOperator),
-        };
+        return getQuery(doc, syntaxTree(this.view.state), this.config.defaultOperator);
     }
 
     private createExtensions(): Extension[] {

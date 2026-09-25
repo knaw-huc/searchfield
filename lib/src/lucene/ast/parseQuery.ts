@@ -15,7 +15,7 @@ import type {
 
 const unescape = (value: string) => value.replace(/\\([\s\S])/g, '$1');
 
-export function parseQuery(source: string, tree: Tree, defaultOperator: 'and' | 'or'): Query | null {
+export default function parseQuery(source: string, tree: Tree, defaultOperator: 'and' | 'or'): Query | null {
     const expressions = childrenNamed(tree.topNode, 'Expression')
         .map(node => expression(node, source, defaultOperator))
         .filter((x): x is Query => x !== null);
