@@ -9,7 +9,7 @@ export interface ASTBase {
     boost?: number;
 }
 
-export type Query =
+export type TreeQuery =
     | BooleanQuery
     | NotQuery
     | TermQuery
@@ -21,12 +21,12 @@ export type Query =
 
 export interface BooleanQuery extends ASTBase {
     type: 'and' | 'or';
-    clauses: Query[];
+    clauses: TreeQuery[];
 }
 
 export interface NotQuery extends ASTBase {
     type: 'not';
-    clause: Query;
+    clause: TreeQuery;
 }
 
 export interface TermQuery extends ASTBase {

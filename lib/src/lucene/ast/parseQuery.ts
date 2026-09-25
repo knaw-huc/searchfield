@@ -2,7 +2,7 @@ import {entityTokenExactRegex} from '../../entityToken';
 import type {SyntaxNode, Tree} from '@lezer/common';
 import type {
     ASTBase,
-    Query,
+    TreeQuery,
     BooleanQuery,
     NotQuery,
     TermQuery,
@@ -15,17 +15,17 @@ import type {
 
 const unescape = (value: string) => value.replace(/\\([\s\S])/g, '$1');
 
-export default function parseQuery(source: string, tree: Tree, defaultOperator: 'and' | 'or'): Query | null {
+export default function parseQuery(source: string, tree: Tree, defaultOperator: 'and' | 'or'): TreeQuery | null {
     const expressions = childrenNamed(tree.topNode, 'Expression')
         .map(node => expression(node, source, defaultOperator))
-        .filter((x): x is Query => x !== null);
+        .filter((x): x is TreeQuery => x !== null);
 
     return expressions.length > 0
         ? (expressions.length === 1 ? expressions[0] : group(expressions, source, defaultOperator))
         : null;
 }
 
-function expression(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): Query | null {
+function expression(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): TreeQuery | null {
     const children = namedChildren(node);
 
     const operator = children.find(child => ['And', 'Or', 'Not'].includes(child.name));
@@ -59,7 +59,7 @@ function expression(node: SyntaxNode, source: string, defaultOperator: 'and' | '
     return withBase({type, clauses: [left, right],} satisfies Omit<BooleanQuery, keyof ASTBase>, node, source);
 }
 
-function clauseNode(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): Query | null {
+function clauseNode(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): TreeQuery | null {
     const primitive = childNamed(node, 'Primitive');
     if (!primitive)
         return null;
@@ -88,7 +88,7 @@ function clauseNode(node: SyntaxNode, source: string, defaultOperator: 'and' | '
     };
 }
 
-function primitiveNode(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): Query | null {
+function primitiveNode(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): TreeQuery | null {
     const child = namedChildren(node)[0];
     if (!child)
         return null;
@@ -109,7 +109,7 @@ function primitiveNode(node: SyntaxNode, source: string, defaultOperator: 'and' 
     }
 }
 
-function termClause(node: SyntaxNode, source: string): Query | null {
+function termClause(node: SyntaxNode, source: string): TreeQuery | null {
     const child = namedChildren(node)[0];
     if (!child)
         return null;
@@ -183,10 +183,10 @@ function regexClause(node: SyntaxNode, source: string): RegexQuery | null {
     return withBase({type: 'regex', value} satisfies Omit<RegexQuery, keyof ASTBase>, node, source);
 }
 
-function groupClause(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): Query | null {
+function groupClause(node: SyntaxNode, source: string, defaultOperator: 'and' | 'or'): TreeQuery | null {
     const expressions = childrenNamed(node, 'Expression')
         .map(child => expression(child, source, defaultOperator))
-        .filter((x): x is Query => x !== null);
+        .filter((x): x is TreeQuery => x !== null);
 
     if (expressions.length === 0)
         return null;
@@ -208,7 +208,7 @@ function entityNode(node: SyntaxNode, source: string): EntityQuery | null {
     } satisfies Omit<EntityQuery, keyof ASTBase>, node, source);
 }
 
-function group(clauses: Query[], source: string, defaultOperator: 'and' | 'or'): BooleanQuery {
+function group(clauses: TreeQuery[], source: string, defaultOperator: 'and' | 'or'): BooleanQuery {
     return {
         type: defaultOperator,
         clauses: flattenBoolean(defaultOperator, clauses),
@@ -223,8 +223,8 @@ function group(clauses: Query[], source: string, defaultOperator: 'and' | 'or'):
     };
 }
 
-function flattenBoolean(type: 'and' | 'or', clauses: Query[]): Query[] {
-    const result: Query[] = []
+function flattenBoolean(type: 'and' | 'or', clauses: TreeQuery[]): TreeQuery[] {
+    const result: TreeQuery[] = []
     for (const clause of clauses) {
         if (clause.type === type && clause.boost === undefined)
             result.push(...clause.clauses);

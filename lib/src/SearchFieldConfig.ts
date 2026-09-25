@@ -1,6 +1,6 @@
 import type {StyleSpec} from 'style-mod';
 import type {EntityToken} from './entityToken';
-import type {Query as TreeQuery} from './lucene/ast/types';
+import type {TreeQuery} from './lucene/ast/types';
 
 export default interface SearchFieldConfig<E extends object> {
     query: string;
